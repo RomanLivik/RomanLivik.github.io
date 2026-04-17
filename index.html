@@ -1,0 +1,1763 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RomanLivik · S0LY3R</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --black: #000000;
+        --white: #ffffff;
+        --grey-1: #f0f0f0;
+        --grey-2: #c0c0c0;
+        --grey-3: #808080;
+        --grey-4: #3a3a3a;
+        --grey-5: #1a1a1a;
+        --grey-6: #0d0d0d;
+        --mono: "Space Mono", monospace;
+        --sans: "Syne", sans-serif;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        background: var(--black);
+        color: var(--white);
+        font-family: var(--mono);
+        overflow-x: hidden;
+        cursor: none;
+      }
+
+      #cursor {
+        position: fixed;
+        width: 10px;
+        height: 10px;
+        background: var(--white);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9999;
+        transform: translate(-50%, -50%);
+        transition:
+          transform 0.1s ease,
+          width 0.25s ease,
+          height 0.25s ease,
+          background 0.25s ease;
+        mix-blend-mode: difference;
+      }
+      #cursor-ring {
+        position: fixed;
+        width: 36px;
+        height: 36px;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9998;
+        transform: translate(-50%, -50%);
+        transition:
+          transform 0.18s ease,
+          width 0.25s ease,
+          height 0.25s ease,
+          border-color 0.25s ease;
+      }
+      body:has(a:hover) #cursor {
+        width: 18px;
+        height: 18px;
+      }
+      body:has(a:hover) #cursor-ring {
+        width: 52px;
+        height: 52px;
+        border-color: rgba(255, 255, 255, 0.8);
+      }
+
+      #abstract-canvas {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        opacity: 0.18;
+        pointer-events: none;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+        background-size: 150px;
+        opacity: 0.4;
+      }
+
+      .wrapper {
+        position: relative;
+        z-index: 2;
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 32px;
+      }
+
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        padding: 20px 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid transparent;
+        transition:
+          border-color 0.4s,
+          background 0.4s,
+          backdrop-filter 0.4s;
+      }
+      nav.scrolled {
+        border-color: rgba(255, 255, 255, 0.08);
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(20px);
+      }
+      .nav-logo {
+        font-family: var(--sans);
+        font-size: 1.1rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-decoration: none;
+        color: var(--white);
+      }
+      .nav-links {
+        display: flex;
+        gap: 32px;
+        list-style: none;
+      }
+      .nav-links a {
+        font-size: 0.75rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--grey-2);
+        text-decoration: none;
+        transition: color 0.25s;
+        position: relative;
+      }
+      .nav-links a::after {
+        content: "";
+        position: absolute;
+        bottom: -3px;
+        left: 0;
+        right: 100%;
+        height: 1px;
+        background: var(--white);
+        transition: right 0.3s ease;
+      }
+      .nav-links a:hover {
+        color: var(--white);
+      }
+      .nav-links a:hover::after {
+        right: 0;
+      }
+
+      #hero {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        padding-top: 80px;
+      }
+      .hero-inner {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 80px;
+        align-items: center;
+      }
+      .hero-left {
+        position: relative;
+      }
+      .hero-tag {
+        display: inline-block;
+        font-size: 0.7rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--grey-3);
+        border: 1px solid var(--grey-4);
+        padding: 5px 12px;
+        margin-bottom: 28px;
+        opacity: 0;
+        animation: fadeUp 0.8s 0.2s forwards;
+      }
+      .hero-name {
+        font-family: var(--sans);
+        font-size: clamp(3rem, 7vw, 6rem);
+        font-weight: 800;
+        line-height: 1;
+        letter-spacing: -0.02em;
+        margin-bottom: 8px;
+        opacity: 0;
+        animation: fadeUp 0.8s 0.4s forwards;
+      }
+      .hero-alias {
+        font-family: var(--mono);
+        font-size: clamp(1rem, 2.5vw, 1.5rem);
+        color: var(--grey-3);
+        margin-bottom: 28px;
+        opacity: 0;
+        animation: fadeUp 0.8s 0.55s forwards;
+      }
+      .hero-alias span {
+        color: var(--white);
+      }
+      .hero-desc {
+        font-size: 0.85rem;
+        line-height: 1.85;
+        color: var(--grey-2);
+        max-width: 480px;
+        margin-bottom: 44px;
+        opacity: 0;
+        animation: fadeUp 0.8s 0.7s forwards;
+      }
+      .hero-cta {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        opacity: 0;
+        animation: fadeUp 0.8s 0.85s forwards;
+      }
+      .btn {
+        display: inline-block;
+        padding: 13px 28px;
+        font-family: var(--mono);
+        font-size: 0.75rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        text-decoration: none;
+        border: 1px solid var(--white);
+        color: var(--black);
+        background: var(--white);
+        transition:
+          background 0.25s,
+          color 0.25s,
+          transform 0.2s;
+        position: relative;
+        overflow: hidden;
+      }
+      .btn::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: var(--black);
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+      }
+      .btn:hover::before {
+        transform: translateX(0);
+      }
+      .btn:hover {
+        color: var(--white);
+      }
+      .btn:hover {
+        transform: translateY(-2px);
+      }
+      .btn span {
+        position: relative;
+        z-index: 1;
+      }
+      .btn-outline {
+        background: transparent;
+        color: var(--white);
+      }
+      .btn-outline::before {
+        background: var(--white);
+      }
+      .btn-outline:hover {
+        color: var(--black);
+      }
+
+      .hero-right {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        animation: fadeIn 1.2s 0.6s forwards;
+      }
+      .avatar-wrap {
+        position: relative;
+        width: 280px;
+        height: 280px;
+      }
+      .avatar-wrap::before,
+      .avatar-wrap::after {
+        content: "";
+        position: absolute;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 50%;
+        animation: spin 18s linear infinite;
+      }
+      .avatar-wrap::before {
+        inset: -20px;
+        animation-duration: 18s;
+      }
+      .avatar-wrap::after {
+        inset: -40px;
+        animation-direction: reverse;
+        animation-duration: 26s;
+        border-style: dashed;
+      }
+      .avatar-ring {
+        position: absolute;
+        inset: -12px;
+        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        animation: spin 12s linear infinite;
+      }
+      .avatar-ring::before {
+        content: "";
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        background: var(--white);
+        border-radius: 50%;
+        top: 50%;
+        left: -4px;
+        transform: translateY(-50%);
+        box-shadow: 0 0 12px 4px rgba(255, 255, 255, 0.5);
+      }
+      .avatar-img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        filter: grayscale(100%) contrast(1.1);
+        border: 2px solid rgba(255, 255, 255, 0.2);
+      }
+      .avatar-status {
+        position: absolute;
+        bottom: 16px;
+        right: 16px;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 0.65rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        background: rgba(0, 0, 0, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        padding: 6px 12px;
+        backdrop-filter: blur(8px);
+      }
+      .status-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--white);
+        animation: pulse 2s infinite;
+      }
+
+      section {
+        padding: 120px 0;
+      }
+      .section-label {
+        font-size: 0.68rem;
+        letter-spacing: 0.25em;
+        text-transform: uppercase;
+        color: var(--grey-3);
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .section-label::before {
+        content: "";
+        display: block;
+        width: 40px;
+        height: 1px;
+        background: var(--grey-4);
+      }
+      .section-title {
+        font-family: var(--sans);
+        font-size: clamp(2rem, 5vw, 3.5rem);
+        font-weight: 800;
+        line-height: 1.05;
+        letter-spacing: -0.02em;
+        margin-bottom: 60px;
+      }
+      .divider {
+        border: none;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.15),
+          transparent
+        );
+        margin: 0;
+      }
+
+      #about .about-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 80px;
+        align-items: start;
+      }
+      .about-text p {
+        font-size: 0.9rem;
+        line-height: 1.9;
+        color: var(--grey-2);
+        margin-bottom: 20px;
+      }
+      .about-text p strong {
+        color: var(--white);
+      }
+      .about-info {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .info-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        padding: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        background: var(--grey-6);
+        transition:
+          border-color 0.3s,
+          transform 0.3s;
+      }
+      .info-item:hover {
+        border-color: rgba(255, 255, 255, 0.2);
+        transform: translateX(6px);
+      }
+      .info-icon {
+        font-size: 1rem;
+        opacity: 0.5;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+      .info-label {
+        font-size: 0.65rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--grey-3);
+        margin-bottom: 4px;
+      }
+      .info-value {
+        font-size: 0.85rem;
+        color: var(--grey-1);
+      }
+
+      #goals .goal-card {
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: var(--grey-6);
+        padding: 48px;
+        position: relative;
+        overflow: hidden;
+        transition: border-color 0.4s;
+      }
+      #goals .goal-card:hover {
+        border-color: rgba(255, 255, 255, 0.25);
+      }
+      #goals .goal-card::after {
+        content: '"';
+        position: absolute;
+        top: -20px;
+        right: 40px;
+        font-family: var(--sans);
+        font-size: 12rem;
+        font-weight: 800;
+        color: rgba(255, 255, 255, 0.03);
+        line-height: 1;
+      }
+      .goal-text {
+        font-family: var(--sans);
+        font-size: clamp(1.1rem, 2vw, 1.45rem);
+        font-weight: 400;
+        line-height: 1.75;
+        color: var(--grey-1);
+        max-width: 780px;
+      }
+
+      #skills .skills-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .skill-cat {
+        background: var(--black);
+        padding: 36px 28px;
+      }
+      .skill-cat-title {
+        font-size: 0.65rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--grey-3);
+        margin-bottom: 24px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .skill-list {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .skill-list li {
+        font-size: 0.8rem;
+        color: var(--grey-2);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition:
+          color 0.25s,
+          transform 0.25s;
+      }
+      .skill-list li:hover {
+        color: var(--white);
+        transform: translateX(4px);
+      }
+      .skill-list li::before {
+        content: "›";
+        color: var(--grey-4);
+        transition: color 0.25s;
+      }
+      .skill-list li:hover::before {
+        color: var(--white);
+      }
+
+      .distros {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-top: 40px;
+      }
+      .distro-badge {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        font-size: 0.75rem;
+        letter-spacing: 0.08em;
+        color: var(--grey-2);
+        transition:
+          border-color 0.3s,
+          color 0.3s;
+      }
+      .distro-badge:hover {
+        border-color: var(--white);
+        color: var(--white);
+      }
+      .distro-badge img {
+        width: 18px;
+        height: 18px;
+        filter: grayscale(1) invert(1);
+        opacity: 0.7;
+      }
+
+      #projects .projects-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .project-card {
+        background: var(--black);
+        padding: 40px 36px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        transition: background 0.3s;
+        text-decoration: none;
+        color: inherit;
+        position: relative;
+        overflow: hidden;
+      }
+      .project-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: var(--white);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.4s ease;
+      }
+      .project-card:hover::before {
+        transform: scaleX(1);
+      }
+      .project-card:hover {
+        background: var(--grey-6);
+      }
+      .project-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+      }
+      .project-icon {
+        opacity: 0.3;
+        font-size: 1.1rem;
+      }
+      .project-lang {
+        font-size: 0.65rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--grey-3);
+        border: 1px solid var(--grey-4);
+        padding: 3px 8px;
+      }
+      .project-name {
+        font-family: var(--sans);
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--white);
+        line-height: 1.25;
+      }
+      .project-desc {
+        font-size: 0.8rem;
+        color: var(--grey-3);
+        line-height: 1.7;
+      }
+      .project-meta {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        font-size: 0.7rem;
+        color: var(--grey-4);
+        margin-top: auto;
+      }
+      .project-stars {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      #hardware .hw-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+      }
+      .hw-card {
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 36px 28px;
+        position: relative;
+        background: var(--grey-6);
+        transition:
+          border-color 0.3s,
+          transform 0.3s;
+      }
+      .hw-card:hover {
+        border-color: rgba(255, 255, 255, 0.3);
+        transform: translateY(-4px);
+      }
+      .hw-num {
+        font-family: var(--sans);
+        font-size: 3rem;
+        font-weight: 800;
+        color: rgba(255, 255, 255, 0.06);
+        position: absolute;
+        top: 20px;
+        right: 24px;
+        line-height: 1;
+      }
+      .hw-name {
+        font-family: var(--sans);
+        font-size: 1.05rem;
+        font-weight: 700;
+        margin-bottom: 16px;
+        color: var(--white);
+      }
+      .hw-specs {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .hw-specs li {
+        font-size: 0.75rem;
+        color: var(--grey-3);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .hw-specs li::before {
+        content: "—";
+        color: var(--grey-4);
+      }
+      .hw-use {
+        margin-top: 20px;
+        font-size: 0.7rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--grey-4);
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        padding-top: 16px;
+      }
+
+      #stats .stats-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        margin-bottom: 60px;
+      }
+      .stat-item {
+        background: var(--black);
+        padding: 48px 36px;
+        text-align: center;
+      }
+      .stat-num {
+        font-family: var(--sans);
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        font-weight: 800;
+        color: var(--white);
+        display: block;
+        margin-bottom: 8px;
+      }
+      .stat-label {
+        font-size: 0.7rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--grey-3);
+      }
+
+      .gh-widget {
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 28px;
+        background: var(--grey-6);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+      }
+      .gh-widget img {
+        width: 100%;
+        max-width: 700px;
+        filter: grayscale(1) invert(1) contrast(1.15);
+        opacity: 0.85;
+      }
+
+      #connect {
+        padding-bottom: 160px;
+      }
+      .connect-inner {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 80px;
+        align-items: start;
+      }
+      .connect-left p {
+        font-size: 0.9rem;
+        line-height: 1.9;
+        color: var(--grey-2);
+        margin-bottom: 32px;
+      }
+      .social-links {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .social-link {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 16px 20px;
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        text-decoration: none;
+        color: var(--grey-2);
+        font-size: 0.8rem;
+        letter-spacing: 0.08em;
+        transition:
+          border-color 0.3s,
+          color 0.3s,
+          background 0.3s,
+          transform 0.3s;
+        position: relative;
+        overflow: hidden;
+      }
+      .social-link::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: var(--white);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.3s ease;
+        z-index: 0;
+      }
+      .social-link:hover::before {
+        transform: scaleX(1);
+      }
+      .social-link:hover {
+        color: var(--black);
+        transform: translateX(4px);
+      }
+      .social-link > * {
+        position: relative;
+        z-index: 1;
+      }
+      .social-platform {
+        font-size: 0.65rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        opacity: 0.5;
+        min-width: 70px;
+      }
+      .social-handle {
+        flex: 1;
+      }
+      .social-arrow {
+        opacity: 0.4;
+        transition:
+          opacity 0.3s,
+          transform 0.3s;
+      }
+      .social-link:hover .social-arrow {
+        opacity: 1;
+        transform: translateX(4px);
+      }
+
+      .business-card-link {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 20px 24px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        text-decoration: none;
+        color: var(--grey-1);
+        font-size: 0.8rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin-top: 28px;
+        background: var(--grey-6);
+        transition:
+          border-color 0.3s,
+          background 0.3s;
+      }
+      .business-card-link:hover {
+        border-color: var(--white);
+        background: var(--grey-5);
+      }
+
+      footer {
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        padding: 40px 0;
+        position: relative;
+        z-index: 2;
+      }
+      .footer-inner {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+      .footer-logo {
+        font-family: var(--sans);
+        font-weight: 800;
+        font-size: 1rem;
+        letter-spacing: 0.05em;
+      }
+      .footer-note {
+        font-size: 0.7rem;
+        color: var(--grey-4);
+        letter-spacing: 0.08em;
+      }
+      .footer-gh a {
+        font-size: 0.7rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--grey-3);
+        text-decoration: none;
+        transition: color 0.25s;
+      }
+      .footer-gh a:hover {
+        color: var(--white);
+      }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(28px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.3;
+          transform: scale(0.8);
+        }
+      }
+
+      .reveal {
+        opacity: 0;
+        transform: translateY(36px);
+        transition:
+          opacity 0.8s ease,
+          transform 0.8s ease;
+      }
+      .reveal.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .reveal-delay-1 {
+        transition-delay: 0.1s;
+      }
+      .reveal-delay-2 {
+        transition-delay: 0.2s;
+      }
+      .reveal-delay-3 {
+        transition-delay: 0.3s;
+      }
+      .reveal-delay-4 {
+        transition-delay: 0.4s;
+      }
+
+      @media (max-width: 900px) {
+        .hero-inner {
+          grid-template-columns: 1fr;
+          gap: 60px;
+        }
+        .hero-right {
+          order: -1;
+        }
+        #about .about-grid {
+          grid-template-columns: 1fr;
+          gap: 40px;
+        }
+        #skills .skills-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        #projects .projects-grid {
+          grid-template-columns: 1fr;
+        }
+        #hardware .hw-grid {
+          grid-template-columns: 1fr;
+        }
+        #stats .stats-row {
+          grid-template-columns: 1fr;
+        }
+        .connect-inner {
+          grid-template-columns: 1fr;
+          gap: 48px;
+        }
+        nav {
+          padding: 16px 24px;
+        }
+        .nav-links {
+          gap: 20px;
+        }
+      }
+      @media (max-width: 640px) {
+        #skills .skills-grid {
+          grid-template-columns: 1fr;
+        }
+        .wrapper {
+          padding: 0 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="cursor"></div>
+    <div id="cursor-ring"></div>
+
+    <canvas id="abstract-canvas"></canvas>
+
+    <nav id="nav">
+      <a href="#hero" class="nav-logo">S0LY3R</a>
+      <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#hardware">Hardware</a></li>
+        <li><a href="#connect">Contact</a></li>
+      </ul>
+    </nav>
+
+    <section id="hero">
+      <div class="wrapper">
+        <div class="hero-inner">
+          <div class="hero-left">
+            <div class="hero-tag">Full Stack Developer · Moscow</div>
+            <h1 class="hero-name">Roman<br />Livik</h1>
+            <div class="hero-alias">alias <span>S0LY3R</span></div>
+            <p class="hero-desc">
+              Novice Full Stack Developer with a deep passion for unix-based
+              systems, ethical hacking, security research, and building useful
+              open-source tools for the Linux community.
+            </p>
+            <div class="hero-cta">
+              <a href="#projects" class="btn"><span>View Projects</span></a>
+              <a
+                href="https://github.com/RomanLivik"
+                target="_blank"
+                class="btn btn-outline"
+                ><span>GitHub Profile</span></a
+              >
+            </div>
+          </div>
+          <div class="hero-right">
+            <div class="avatar-wrap">
+              <div class="avatar-ring"></div>
+              <img
+                src="https://avatars.githubusercontent.com/u/114293450?v=4"
+                alt="RomanLivik"
+                class="avatar-img"
+              />
+              <div class="avatar-status">
+                <div class="status-dot"></div>
+                UTC +03:00
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider" />
+
+    <section id="about">
+      <div class="wrapper">
+        <div class="section-label">Background</div>
+        <h2 class="section-title reveal">Who I am</h2>
+        <div class="about-grid">
+          <div class="about-text reveal">
+            <p>
+              I'm a student at
+              <strong
+                >Moscow Technical University of Communications and
+                Informatics</strong
+              >, diving deep into the world of IT every single day — not just as
+              a career path, but as a genuine passion and lifestyle.
+            </p>
+            <p>
+              My interests span
+              <strong
+                >unix-based systems, application development, graphical design,
+                OS customization, ethical hacking</strong
+              >
+              and security research. More than half of my projects I build
+              entirely solo, from concept to deployment.
+            </p>
+            <p>
+              GNU/Linux is my daily driver and my favourite platform. I love
+              ricing, writing automation scripts, building themes, and
+              contributing tools that make life easier for the broader Linux
+              community.
+            </p>
+          </div>
+          <div class="about-info reveal reveal-delay-2">
+            <div class="info-item">
+              <div class="info-icon">◎</div>
+              <div>
+                <div class="info-label">Location</div>
+                <div class="info-value">Moscow, Russian Federation</div>
+              </div>
+            </div>
+            <div class="info-item">
+              <div class="info-icon">◎</div>
+              <div>
+                <div class="info-label">Education</div>
+                <div class="info-value">
+                  MTUCI — Moscow Technical University of Communications and
+                  Informatics
+                </div>
+              </div>
+            </div>
+            <div class="info-item">
+              <div class="info-icon">◎</div>
+              <div>
+                <div class="info-label">Focus</div>
+                <div class="info-value">
+                  Full Stack Dev · Security · Linux · Swift · Python
+                </div>
+              </div>
+            </div>
+            <div class="info-item">
+              <div class="info-icon">◎</div>
+              <div>
+                <div class="info-label">Achievement</div>
+                <div class="info-value">Pull Shark — GitHub Achievements</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider" />
+
+    <section id="goals">
+      <div class="wrapper">
+        <div class="section-label">Vision</div>
+        <h2 class="section-title reveal">The goal</h2>
+        <div class="goal-card reveal">
+          <p class="goal-text">
+            The goal of my projects is to create the most convenient,
+            customizable, stable and interesting products for the end user. I am
+            currently developing solo, but sincerely want to find a team of
+            people with common interests. In the future — a full-fledged
+            ecosystem of products for study, work, business and everyday use,
+            that significantly simplifies the lives of students, businessmen and
+            ordinary workers.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider" />
+
+    <section id="skills">
+      <div class="wrapper">
+        <div class="section-label">Expertise</div>
+        <h2 class="section-title reveal">Ecosystem & Mastery</h2>
+
+        <div class="skills-grid reveal">
+          <div class="skill-cat">
+            <div class="skill-cat-title">Languages</div>
+            <ul class="skill-list">
+              <li>Python</li>
+              <li>Swift</li>
+              <li>Shell / Bash</li>
+              <li>TypeScript</li>
+              <li>CSS</li>
+            </ul>
+          </div>
+          <div class="skill-cat">
+            <div class="skill-cat-title">Web & Mobile</div>
+            <ul class="skill-list">
+              <li>Frontend Development</li>
+              <li>SwiftUI / macOS Apps</li>
+              <li>REST APIs</li>
+              <li>GitHub Pages</li>
+            </ul>
+          </div>
+          <div class="skill-cat">
+            <div class="skill-cat-title">Systems</div>
+            <ul class="skill-list">
+              <li>GNU/Linux</li>
+              <li>Docker</li>
+              <li>Arch Linux</li>
+              <li>Networking</li>
+              <li>Ethical Hacking</li>
+            </ul>
+          </div>
+          <div class="skill-cat">
+            <div class="skill-cat-title">Development</div>
+            <ul class="skill-list">
+              <li>Security Auditing</li>
+              <li>OS Customization</li>
+              <li>Automation Scripts</li>
+              <li>Open Source</li>
+              <li>Graphical Design</li>
+            </ul>
+          </div>
+        </div>
+
+        <div style="margin-top: 48px" class="reveal reveal-delay-2">
+          <div class="section-label" style="margin-bottom: 20px">
+            Favourite GNU/Linux Distributions
+          </div>
+          <div class="distros">
+            <div class="distro-badge">
+              <img
+                src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/archlinux/archlinux-original.svg"
+                alt="Arch"
+              />
+              Arch Linux
+            </div>
+            <div class="distro-badge">
+              <img
+                src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/gentoo/gentoo-original.svg"
+                alt="Gentoo"
+              />
+              Gentoo
+            </div>
+            <div class="distro-badge">
+              <img
+                src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/debian/debian-original.svg"
+                alt="Kali"
+              />
+              Kali Linux
+            </div>
+            <div class="distro-badge">
+              <img
+                src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg"
+                alt="Mint"
+              />
+              Linux Mint
+            </div>
+            <div class="distro-badge">
+              <img
+                src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nixos/nixos-original.svg"
+                alt="NixOS"
+              />
+              NixOS
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider" />
+
+    <section id="projects">
+      <div class="wrapper">
+        <div class="section-label">Work</div>
+        <h2 class="section-title reveal">Pinned Projects</h2>
+        <div class="projects-grid reveal">
+          <a
+            href="https://github.com/RomanLivik/tahoe-notes-macos"
+            target="_blank"
+            class="project-card"
+          >
+            <div class="project-header">
+              <div class="project-icon">◈</div>
+              <div class="project-lang">Swift</div>
+            </div>
+            <div class="project-name">tahoe-notes-macos</div>
+            <div class="project-desc">
+              A lightweight macOS notes application with markdown support. Built
+              for speed and simplicity.
+            </div>
+            <div class="project-meta">
+              <span class="project-stars">★ —</span>
+              <span>Personal</span>
+            </div>
+          </a>
+
+          <a
+            href="https://github.com/VooDoo-INC/voodoo-aircrack-script"
+            target="_blank"
+            class="project-card"
+          >
+            <div class="project-header">
+              <div class="project-icon">◈</div>
+              <div class="project-lang">Python</div>
+            </div>
+            <div class="project-name">voodoo-aircrack-script</div>
+            <div class="project-desc">
+              Lightweight script for aircrack-ng. A clean, minimal wrapper for
+              wireless security auditing tasks.
+            </div>
+            <div class="project-meta">
+              <span class="project-stars">★ 2</span>
+              <span>VooDoo-INC</span>
+            </div>
+          </a>
+
+          <a
+            href="https://github.com/RomanLivik/complex-github-widget"
+            target="_blank"
+            class="project-card"
+          >
+            <div class="project-header">
+              <div class="project-icon">◈</div>
+              <div class="project-lang">TypeScript</div>
+            </div>
+            <div class="project-name">complex-github-widget</div>
+            <div class="project-desc">
+              A beautiful, complex GitHub stats widget designed for profile
+              READMEs and personal pages.
+            </div>
+            <div class="project-meta">
+              <span class="project-stars">★ —</span>
+              <span>Personal</span>
+            </div>
+          </a>
+
+          <a
+            href="https://github.com/RomanLivik/obsidian-amoled-black"
+            target="_blank"
+            class="project-card"
+          >
+            <div class="project-header">
+              <div class="project-icon">◈</div>
+              <div class="project-lang">CSS</div>
+            </div>
+            <div class="project-name">obsidian-amoled-black</div>
+            <div class="project-desc">
+              Simple black and white theme for Obsidian with animations and deep
+              AMOLED black background.
+            </div>
+            <div class="project-meta">
+              <span class="project-stars">★ —</span>
+              <span>Theme</span>
+            </div>
+          </a>
+
+          <a
+            href="https://github.com/RomanLivik/root-seeker"
+            target="_blank"
+            class="project-card"
+          >
+            <div class="project-header">
+              <div class="project-icon">◈</div>
+              <div class="project-lang">Shell</div>
+            </div>
+            <div class="project-name">root-seeker</div>
+            <div class="project-desc">
+              Lightweight script for security auditing and privilege escalation
+              vector discovery in Linux systems.
+            </div>
+            <div class="project-meta">
+              <span class="project-stars">★ —</span>
+              <span>Security</span>
+            </div>
+          </a>
+
+          <a
+            href="https://github.com/RomanLivik/docker-shield"
+            target="_blank"
+            class="project-card"
+          >
+            <div class="project-header">
+              <div class="project-icon">◈</div>
+              <div class="project-lang">Shell</div>
+            </div>
+            <div class="project-name">docker-shield</div>
+            <div class="project-desc">
+              A specialized tool for auditing the security configuration of
+              running Docker containers.
+            </div>
+            <div class="project-meta">
+              <span class="project-stars">★ —</span>
+              <span>Security</span>
+            </div>
+          </a>
+        </div>
+
+        <div
+          style="margin-top: 24px; display: flex; justify-content: flex-end"
+          class="reveal"
+        >
+          <a
+            href="https://github.com/RomanLivik?tab=repositories"
+            target="_blank"
+            class="btn btn-outline"
+          >
+            <span>All 21 Repositories ↗</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider" />
+
+    <section id="hardware">
+      <div class="wrapper">
+        <div class="section-label">Setup</div>
+        <h2 class="section-title reveal">My Workstation</h2>
+        <div class="hw-grid">
+          <div class="hw-card reveal">
+            <div class="hw-num">01</div>
+            <div class="hw-name">ThinkPad L13</div>
+            <ul class="hw-specs">
+              <li>Intel Core i5-10310U</li>
+              <li>Intel UHD Graphics</li>
+              <li>16 GB RAM</li>
+              <li>512 GB SSD</li>
+            </ul>
+            <div class="hw-use">Arch / Gentoo ricing · Daily work</div>
+          </div>
+
+          <div class="hw-card reveal reveal-delay-2">
+            <div class="hw-num">02</div>
+            <div class="hw-name">MacBook Air 2024</div>
+            <ul class="hw-specs">
+              <li>Apple M3</li>
+              <li>8 GB Unified Memory</li>
+              <li>512 GB SSD</li>
+              <li>macOS 26 Tahoe</li>
+            </ul>
+            <div class="hw-use">Frontend dev · Office · Crypto</div>
+          </div>
+
+          <div class="hw-card reveal reveal-delay-3">
+            <div class="hw-num">03</div>
+            <div class="hw-name">Stationary PC</div>
+            <ul class="hw-specs">
+              <li>AMD Ryzen 5 3600</li>
+              <li>Nvidia GTX 1650 4 GB</li>
+              <li>16 GB DDR4 Kingston Fury</li>
+              <li>1 TB Kingston SSD</li>
+            </ul>
+            <div class="hw-use">Windows 11 · Work · Gaming</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider" />
+
+    <section id="stats">
+      <div class="wrapper">
+        <div class="section-label">GitHub</div>
+        <h2 class="section-title reveal">Numbers</h2>
+
+        <div class="stats-row reveal">
+          <div class="stat-item">
+            <span class="stat-num" data-target="21">0</span>
+            <div class="stat-label">Repositories</div>
+          </div>
+          <div class="stat-item">
+            <span class="stat-num" data-target="2">0</span>
+            <div class="stat-label">Followers</div>
+          </div>
+          <div class="stat-item">
+            <span class="stat-num" data-target="9">0</span>
+            <div class="stat-label">Following</div>
+          </div>
+        </div>
+
+        <div class="gh-widget reveal">
+          <img
+            src="https://complex-github-widget-c9h2.vercel.app/api/widget?username=RomanLivik"
+            alt="GitHub Stats"
+            onerror="this.style.display = 'none'"
+          />
+          <img
+            src="https://github-readme-stats.vercel.app/api?username=RomanLivik&show_icons=true&theme=dark&bg_color=0d0d0d&text_color=c0c0c0&title_color=ffffff&icon_color=808080&border_color=1a1a1a&hide_border=false"
+            alt="GitHub Stats"
+          />
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider" />
+
+    <section id="connect">
+      <div class="wrapper">
+        <div class="section-label">Contact</div>
+        <h2 class="section-title reveal">Let's connect</h2>
+        <div class="connect-inner">
+          <div class="connect-left reveal">
+            <p>
+              I'm always open to interesting projects, collaborations, or just a
+              good conversation about Linux, security, or development. Find me
+              on the platforms below.
+            </p>
+            <div class="social-links">
+              <a
+                href="https://t.me/n_oth1n_g"
+                target="_blank"
+                class="social-link"
+              >
+                <span class="social-platform">Telegram</span>
+                <span class="social-handle">@n_oth1n_g</span>
+                <span class="social-arrow">→</span>
+              </a>
+              <a
+                href="https://x.com/n_0th1n_g"
+                target="_blank"
+                class="social-link"
+              >
+                <span class="social-platform">X / Twitter</span>
+                <span class="social-handle">@n_0th1n_g</span>
+                <span class="social-arrow">→</span>
+              </a>
+              <a
+                href="https://www.instagram.com/n_oth1n_g/"
+                target="_blank"
+                class="social-link"
+              >
+                <span class="social-platform">Instagram</span>
+                <span class="social-handle">@n_oth1n_g</span>
+                <span class="social-arrow">→</span>
+              </a>
+              <a
+                href="https://steamcommunity.com/id/RomanLivik/"
+                target="_blank"
+                class="social-link"
+              >
+                <span class="social-platform">Steam</span>
+                <span class="social-handle">RomanLivik</span>
+                <span class="social-arrow">→</span>
+              </a>
+              <a
+                href="https://github.com/RomanLivik"
+                target="_blank"
+                class="social-link"
+              >
+                <span class="social-platform">GitHub</span>
+                <span class="social-handle">RomanLivik</span>
+                <span class="social-arrow">→</span>
+              </a>
+            </div>
+
+            <a
+              href="https://t.me/S0lY3R_buisness_card"
+              target="_blank"
+              class="business-card-link"
+            >
+              <span>◈</span>
+              <span>View Digital Business Card on Telegram</span>
+              <span>→</span>
+            </a>
+          </div>
+
+          <div
+            class="reveal reveal-delay-2"
+            style="
+              display: flex;
+              flex-direction: column;
+              gap: 20px;
+              justify-content: center;
+            "
+          >
+            <div
+              style="
+                border: 1px solid rgba(255, 255, 255, 0.07);
+                padding: 36px;
+                background: var(--grey-6);
+                font-family: var(--mono);
+                font-size: 0.7rem;
+                color: var(--grey-4);
+                line-height: 1.9;
+              "
+            >
+              <div style="color: var(--grey-2); margin-bottom: 16px">
+                // contact.info
+              </div>
+              <div>
+                <span style="color: var(--grey-3)">name</span> = "Roman Livik"
+              </div>
+              <div>
+                <span style="color: var(--grey-3)">alias</span> = "S0LY3R"
+              </div>
+              <div>
+                <span style="color: var(--grey-3)">location</span>= "Moscow, RU"
+              </div>
+              <div>
+                <span style="color: var(--grey-3)">tz</span> = "UTC+03:00"
+              </div>
+              <div><span style="color: var(--grey-3)">uni</span> = "MTUCI"</div>
+              <div>
+                <span style="color: var(--grey-3)">status</span> =
+                <span style="color: var(--white)">"open to collab"</span>
+              </div>
+              <div>
+                <span style="color: var(--grey-3)">focus</span> =
+                <span style="color: var(--white)">"building cool stuff"</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="wrapper">
+        <div class="footer-inner">
+          <div class="footer-logo">RomanLivik</div>
+          <div class="footer-note">© 2026 · S0LY3R · All rights reserved</div>
+          <div class="footer-gh">
+            <a href="https://github.com/RomanLivik" target="_blank"
+              >github.com/RomanLivik ↗</a
+            >
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      const cursor = document.getElementById("cursor");
+      const ring = document.getElementById("cursor-ring");
+      let mx = 0,
+        my = 0,
+        rx = 0,
+        ry = 0;
+      document.addEventListener("mousemove", (e) => {
+        mx = e.clientX;
+        my = e.clientY;
+      });
+      function animateCursor() {
+        cursor.style.left = mx + "px";
+        cursor.style.top = my + "px";
+        rx += (mx - rx) * 0.12;
+        ry += (my - ry) * 0.12;
+        ring.style.left = rx + "px";
+        ring.style.top = ry + "px";
+        requestAnimationFrame(animateCursor);
+      }
+      animateCursor();
+
+      const nav = document.getElementById("nav");
+      window.addEventListener("scroll", () => {
+        nav.classList.toggle("scrolled", window.scrollY > 60);
+      });
+
+      (function () {
+        const canvas = document.getElementById("abstract-canvas");
+        const ctx = canvas.getContext("2d");
+        let W, H;
+        function resize() {
+          W = canvas.width = window.innerWidth;
+          H = canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener("resize", resize);
+
+        const lines = [];
+        const NUM = 14;
+        for (let i = 0; i < NUM; i++) {
+          lines.push({
+            x: Math.random() * W,
+            y: Math.random() * H,
+            vx: (Math.random() - 0.5) * 0.6,
+            vy: (Math.random() - 0.5) * 0.6,
+            len: 200 + Math.random() * 400,
+            angle: Math.random() * Math.PI * 2,
+            av: (Math.random() - 0.5) * 0.008,
+            width: 0.3 + Math.random() * 0.7,
+            curve: (Math.random() - 0.5) * 0.04,
+          });
+        }
+
+        const rings = [];
+        for (let i = 0; i < 3; i++) {
+          rings.push({
+            cx: W * (0.2 + i * 0.3),
+            cy: H * 0.5,
+            r: 120 + i * 80,
+            angle: (i * Math.PI * 2) / 3,
+            speed: 0.003 + i * 0.001,
+            tilt: (Math.random() - 0.5) * 1.2,
+          });
+        }
+
+        function draw(t) {
+          ctx.clearRect(0, 0, W, H);
+
+          rings.forEach((ring) => {
+            ring.angle += ring.speed;
+            ctx.save();
+            ctx.translate(ring.cx, ring.cy);
+            ctx.scale(1, Math.cos(ring.tilt + ring.angle * 0.1));
+            ctx.beginPath();
+            ctx.arc(0, 0, ring.r, 0, Math.PI * 2);
+            ctx.strokeStyle = "rgba(255,255,255,0.12)";
+            ctx.lineWidth = 0.8;
+            ctx.stroke();
+            // Node dot
+            const nx = Math.cos(ring.angle) * ring.r;
+            const ny = Math.sin(ring.angle) * ring.r;
+            ctx.beginPath();
+            ctx.arc(nx, ny, 2.5, 0, Math.PI * 2);
+            ctx.fillStyle = "rgba(255,255,255,0.6)";
+            ctx.fill();
+            ctx.restore();
+          });
+
+          lines.forEach((l) => {
+            l.x += l.vx;
+            l.y += l.vy;
+            l.angle += l.av;
+            if (l.x < -l.len) l.x = W + l.len;
+            if (l.x > W + l.len) l.x = -l.len;
+            if (l.y < -l.len) l.y = H + l.len;
+            if (l.y > H + l.len) l.y = -l.len;
+
+            ctx.beginPath();
+            const x2 = l.x + Math.cos(l.angle) * l.len;
+            const y2 = l.y + Math.sin(l.angle) * l.len;
+            const cpx =
+              (l.x + x2) / 2 +
+              Math.cos(l.angle + Math.PI / 2) * l.len * l.curve;
+            const cpy =
+              (l.y + y2) / 2 +
+              Math.sin(l.angle + Math.PI / 2) * l.len * l.curve;
+            ctx.moveTo(l.x, l.y);
+            ctx.quadraticCurveTo(cpx, cpy, x2, y2);
+            ctx.strokeStyle = `rgba(255,255,255,${l.width * 0.15})`;
+            ctx.lineWidth = l.width;
+            ctx.stroke();
+          });
+
+          requestAnimationFrame(draw);
+        }
+        requestAnimationFrame(draw);
+      })();
+
+      const reveals = document.querySelectorAll(".reveal");
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.classList.add("visible");
+              io.unobserve(e.target);
+            }
+          });
+        },
+        { threshold: 0.12 },
+      );
+      reveals.forEach((el) => io.observe(el));
+
+      const counters = document.querySelectorAll(".stat-num[data-target]");
+      const cio = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (!e.isIntersecting) return;
+            const el = e.target;
+            const target = +el.dataset.target;
+            let start = 0;
+            const step = () => {
+              start += Math.ceil(target / 30);
+              if (start >= target) {
+                el.textContent = target;
+                return;
+              }
+              el.textContent = start;
+              requestAnimationFrame(step);
+            };
+            requestAnimationFrame(step);
+            cio.unobserve(el);
+          });
+        },
+        { threshold: 0.5 },
+      );
+      counters.forEach((el) => cio.observe(el));
+    </script>
+  </body>
+</html>
