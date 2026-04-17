@@ -1,2 +1,2 @@
-# RomanLivik.github.io
-Muy personal website
+# Personal github website
+My personal business card
