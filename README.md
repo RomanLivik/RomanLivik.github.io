@@ -1,4 +1,4 @@
 # Personal github website
 My personal business card
 
-URL = https://RomanLivik.github.io/
+URL = https://GadzhievAleksandr.github.io/
